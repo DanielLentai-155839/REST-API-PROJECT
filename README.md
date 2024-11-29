@@ -1,62 +1,203 @@
-from flask import Flask, jsonify, request
+REST API for Product Management
+This is a simple REST API built using Python and Flask to manage a Product resource. The API supports creating, retrieving, updating, and deleting products. A client interaction script is also provided to interact with the API.
 
-app = Flask(__name__)
+Table of Contents
+Features
+Setup Instructions
+API Endpoints
+Testing the API
+Client Interaction Script
+Features
+Endpoints:
+Add a new product.
+Retrieve all products.
+Retrieve a product by ID.
+Update a product.
+Delete a product.
+Error Handling:
+400 Bad Request: Invalid input data.
+404 Not Found: Requested resource does not exist.
+201 Created: Product created successfully.
+JSON request and response format.
+Setup Instructions
+1. Prerequisites
+Python 3.7+ must be installed.
+Install pip for managing Python packages.
+2. Install Required Libraries
+Run the following command to install Flask and Requests:pip install flask requests
+3. Run the API Server
+Save the API code to a file named product_api.py.
+Start the API server by running:python product_api.py
+The server will run on http://127.0.0.1:5000.
 
-# In-memory data storage
-products = []
-product_id_counter = 1
+Here's the content for your README.md file:
 
-# Route to get all products
-@app.route('/products', methods=['GET'])
-def get_products():
-    return jsonify(products), 200
+REST API for Product Management
+This is a simple REST API built using Python and Flask to manage a Product resource. The API supports creating, retrieving, updating, and deleting products. A client interaction script is also provided to interact with the API.
 
-# Route to get a single product by ID
-@app.route('/products/<int:product_id>', methods=['GET'])
-def get_product(product_id):
-    for product in products:
-        if product['id'] == product_id:
-            return jsonify(product), 200
-    return jsonify({'error': 'Product not found'}), 404
+Table of Contents
+Features
+Setup Instructions
+API Endpoints
+Testing the API
+Client Interaction Script
+Features
+Endpoints:
+Add a new product.
+Retrieve all products.
+Retrieve a product by ID.
+Update a product.
+Delete a product.
+Error Handling:
+400 Bad Request: Invalid input data.
+404 Not Found: Requested resource does not exist.
+201 Created: Product created successfully.
+JSON request and response format.
+Setup Instructions
+1. Prerequisites
+Python 3.7+ must be installed.
+Install pip for managing Python packages.
+2. Install Required Libraries
+Run the following command to install Flask and Requests:
 
-# Route to create a new product
-@app.route('/products', methods=['POST'])
-def create_product():
-    global product_id_counter
-    data = request.json
-    if not data or not all(key in data for key in ['name', 'description', 'price']):
-        return jsonify({'error': 'Invalid input'}), 400
-
-    product = {
-        'id': product_id_counter,
-        'name': data['name'],
-        'description': data['description'],
-        'price': float(data['price']),
+bash
+Copy code
+pip install flask requests
+3. Run the API Server
+Save the API code to a file named product_api.py.
+Start the API server by running:
+python product_api.py
+The server will run on http://127.0.0.1:5000.
+API Endpoints
+1. Retrieve All Products
+Endpoint: GET /products
+Response: List of all products.
+Example:
+json
+[
+    {
+        "id": 1,
+        "name": "Laptop",
+        "description": "A high-performance laptop",
+        "price": 1200.99
     }
-    products.append(product)
-    product_id_counter += 1
-    return jsonify(product), 201
+]
+2. Retrieve a Product by ID
+Endpoint: GET /products/<product_id>
+Response: Product details if found.
+Example:
+json
 
-# Route to update a product
-@app.route('/products/<int:product_id>', methods=['PUT'])
-def update_product(product_id):
-    data = request.json
-    for product in products:
-        if product['id'] == product_id:
-            product.update({
-                'name': data.get('name', product['name']),
-                'description': data.get('description', product['description']),
-                'price': float(data.get('price', product['price']))
-            })
-            return jsonify(product), 200
-    return jsonify({'error': 'Product not found'}), 404
+{
+    "id": 1,
+    "name": "Laptop",
+    "description": "A high-performance laptop",
+    "price": 1200.99
+}
+3. Add a New Product
+Endpoint: POST /products
+Request Body (JSON):
+json
 
-# Route to delete a product
-@app.route('/products/<int:product_id>', methods=['DELETE'])
-def delete_product(product_id):
-    global products
-    products = [product for product in products if product['id'] != product_id]
-    return jsonify({'message': 'Product deleted'}), 200
+{
+    "name": "Smartphone",
+    "description": "A high-end smartphone",
+    "price": 799.99
+}
+Response (201 Created):
+json
 
-if __name__ == '__main__':
-    app.run(debug=True)
+{
+    "id": 2,
+    "name": "Smartphone",
+    "description": "A high-end smartphone",
+    "price": 799.99
+}
+4. Update a Product
+Endpoint: PUT /products/<product_id>
+Request Body (JSON):
+json
+
+{
+    "name": "Updated Laptop",
+    "price": 999.99
+}
+Response:
+json
+
+{
+    "id": 1,
+    "name": "Updated Laptop",
+    "description": "A high-performance laptop",
+    "price": 999.99
+}
+5. Delete a Product
+Endpoint: DELETE /products/<product_id>
+Response:
+json
+
+{
+    "message": "Product deleted"
+}
+Testing the API
+Manual Testing
+Use a tool like Postman or cURL to manually test the API.
+
+Example: Adding a Product with cURL
+
+curl -X POST http://127.0.0.1:5000/products \
+-H "Content-Type: application/json" \
+-d '{"name": "Laptop", "description": "A high-performance laptop", "price": 1200.99}'
+Example: Retrieving All Products with cURL
+
+
+curl -X GET http://127.0.0.1:5000/products
+Client Interaction Script
+A Python script is provided to interact with the API.
+
+1. Save the Script
+Save the following script to a file named client_script.py:
+
+
+import requests
+
+BASE_URL = "http://127.0.0.1:5000/products"
+
+def add_product(name, description, price):
+    product_data = {"name": name, "description": description, "price": price}
+    response = requests.post(BASE_URL, json=product_data)
+    if response.status_code == 201:
+        print("Product added:", response.json())
+    else:
+        print("Error:", response.json())
+
+def get_all_products():
+    response = requests.get(BASE_URL)
+    if response.status_code == 200:
+        print("Products:", response.json())
+    else:
+        print("Error:", response.status_code)
+
+if __name__ == "__main__":
+    add_product("Laptop", "A high-performance laptop", 1200.99)
+    add_product("Headphones", "Noise-cancelling headphones", 299.99)
+    get_all_products()
+2. Run the Script
+Execute the script to add products and retrieve the list:
+
+
+
+python client_script.py
+Example Output
+plaintext
+
+Adding Products...
+Product added: {'id': 1, 'name': 'Laptop', 'description': 'A high-performance laptop', 'price': 1200.99}
+Product added: {'id': 2, 'name': 'Headphones', 'description': 'Noise-cancelling headphones', 'price': 299.99}
+
+Retrieving All Products...
+Products: [{'id': 1, 'name': 'Laptop', 'description': 'A high-performance laptop', 'price': 1200.99}, {'id': 2, 'name': 'Headphones', 'description': 'Noise-cancelling headphones', 'price': 299.99}]
+
+
+
+
