@@ -1,0 +1,38 @@
+from flask import Flask, request, jsonify
+
+app = Flask(__name__)
+
+# In-memory database (list of products)
+products = []
+product_id_counter = 1
+
+# POST: Create a new product
+@app.route('/products', methods=['POST'])
+def create_product():
+    global product_id_counter
+
+    # Validate request data
+    data = request.get_json()
+    if not data or 'name' not in data or 'price' not in data:
+        return jsonify({"error": "Invalid input"}), 400
+
+    # Create a new product
+    new_product = {
+        "id": product_id_counter,
+        "name": data['name'],
+        "description": data.get('description', ''),  # Optional field
+        "price": data['price']
+    }
+    products.append(new_product)
+    product_id_counter += 1
+
+    return jsonify(new_product), 201
+
+# GET: Retrieve all products
+@app.route('/products', methods=['GET'])
+def get_products():
+    return jsonify(products), 200
+
+# Run the server
+if __name__ == '__main__':
+    app.run(debug=True)
